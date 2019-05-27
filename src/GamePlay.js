@@ -23,9 +23,13 @@ GamePlayManager = {   //ObjetoGamePlayManager
     },
     create: function(){
         game.add.sprite(0, 0, 'background');
-        this.title = game.add.sprite(game.width/2, 100, 'title');
-        this.hangmanComplete = game.add.sprite(game.width/2, 350, 'hangman');
-        this.buttonPlay = game.add.button(game.width/2, 500, 'button-play', this.startGame, this); //new Button(posicion x , posicion x, llave , funcion a llamar , callback Context GAMEPlayManager (this), imagen antes de pasar el raton, imagen al pasar el raton, imagen a cargar antes de dar click, imagen al cagar al dar click)
+        this.title = game.add.sprite(game.width/2, 90, 'title');
+        this.title.anchor.setTo(0.5);
+        this.hangmanComplete = game.add.sprite(game.width/2, 300, 'hangman');
+        this.hangmanComplete.anchor.setTo(0.5);
+        this.hangmanComplete.scale.setTo(0.7);
+        this.buttonPlay = game.add.button(game.width/2, 520, 'button-play', this.startGame, this); //new Button(posicion x , posicion x, llave , funcion a llamar , callback Context GAMEPlayManager (this), imagen antes de pasar el raton, imagen al pasar el raton, imagen a cargar antes de dar click, imagen al cagar al dar click)
+        this.buttonPlay.anchor.setTo(0.5);
     },
     startGame: function(){
         stateGame = STATE_GAME_PLAYING;
