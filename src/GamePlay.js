@@ -7,6 +7,7 @@ var STATE_GAME_GAME_OVER            = 5;
 var STATE_GAME_WIN                  = 6;
 
 var stateGame = STATE_GAME_NONE; //estado inicial
+var list = ["resistencia", "arduino", "robot", "perro", "Creacion","marrano"];
 
 GamePlayManager = {   //ObjetoGamePlayManager
     init: function(){
@@ -33,6 +34,16 @@ GamePlayManager = {   //ObjetoGamePlayManager
     },
     startGame: function(){
         stateGame = STATE_GAME_PLAYING;
+        this.randomWord = list[Math.floor(Math.random()*list.length)];
+        this.compareWord(this.randomWord);
+    },
+    compareWord: function(word){
+        console.log(word);
+        this.sliceList = []
+        for(var i=0; i<= word.lenght; i++){
+            this.sliceList.push(word[i]);
+        }
+        console.log(this.sliceList);
     },
     update: function(){
         switch(stateGame){ //Maquina de estados
