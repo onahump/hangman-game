@@ -1,4 +1,3 @@
-
 var STATE_GAME_NONE                 = 0;
 var STATE_GAME_LOADING              = 1;
 var STATE_GAME_MAIN_MENU            = 2;
@@ -21,6 +20,14 @@ GamePlayManager = {   //ObjetoGamePlayManager
         game.load.image('button-play', 'assets/img/button-play2.png');
         game.load.image('title', 'assets/img/title.png');
         game.load.image('hangman', 'assets/img/complete_hangman.png');
+        game.load.image('platform', 'assets/img/platform.png');
+        game.load.image('body', 'assets/img/body.png');
+        game.load.image('head', 'assets/img/head.png');
+        game.load.image('body', 'assets/img/body.png');
+        game.load.image('armLeft', 'assets/img/arm_left.png');
+        game.load.image('armRight', 'assets/img/arm_right.png');
+        game.load.image('legRight', 'assets/img/leg_right.png');
+        game.load.image('legLeft', 'assets/img/leg_left.png');
     },
     create: function(){
         game.add.sprite(0, 0, 'background');
