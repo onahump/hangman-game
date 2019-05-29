@@ -4,11 +4,10 @@ var STATE_GAME_MAIN_MENU            = 2;
 var STATE_GAME_PLAYING              = 4;
 var STATE_GAME_GAME_OVER            = 5;
 var STATE_GAME_WIN                  = 6;
-var correct = [];
-var bmd;
+
 
 var stateGame = STATE_GAME_NONE; //estado inicial
-var list = ["resistencia", "arduino", "robot", "perro", "creacion","marrano"];
+var list = ["resistencia", "arduino", "robot", "computadora", "creacion","sensores","circuito","motor"];
 
 GamePlayManager = {   //ObjetoGamePlayManager
     init: function(){
@@ -30,6 +29,10 @@ GamePlayManager = {   //ObjetoGamePlayManager
         game.load.image('armRight', 'assets/img/hand_right.png');
         game.load.image('legRight', 'assets/img/leg_right.png');
         game.load.image('legLeft', 'assets/img/leg_left.png');
+        game.load.image('bgMenu', 'assets/img/bg-menu.png');
+        game.load.image('buttonPlayAgain', 'assets/img/button-playagain.png');
+        game.load.image('wonTxt', 'assets/img/youwon.png');
+        game.load.image('loseTxt', 'assets/img/youlose.png');
     },
     create: function(){
         game.add.sprite(0, 0, 'background');
@@ -54,24 +57,66 @@ GamePlayManager = {   //ObjetoGamePlayManager
         this.legRight.scale.setTo(0.7);
         this.legLeft = game.add.sprite(564, 270, 'legLeft');
         this.legLeft.scale.setTo(0.7);
+
+        //Black background
+        var pixel = game.add.bitmapData(1,1);
+        pixel.ctx.fillStyle = '#000000';
+        pixel.ctx.fillRect(0,0,1,1);
+
+        this.blackBackground = game.add.sprite(0,0,pixel);
+        this.blackBackground.width = game.width;
+        this.blackBackground.height = game.height;
+        this.blackBackground.alpha = 0.5;
+
+        //Lose or Won
+        this.bgMenu = game.add.sprite(game.width/2, game.height/2, 'bgMenu');
+        this.bgMenu.anchor.setTo(0.5);
+        this.wonTxt = game.add.sprite(game.width/2, 150, 'wonTxt');
+        this.wonTxt.anchor.setTo(0.5);
+        this.loseTxt = game.add.sprite(game.width/2, 150, 'loseTxt');
+        this.loseTxt.anchor.setTo(0.5);
+        this.buttonPlayAgain = game.add.button(game.width/2, 280, 'buttonPlayAgain', this.playAgain, this);
+        this.buttonPlayAgain.anchor.setTo(0.5);
+        this.buttonPlayAgain.scale.setTo(0.7);
+
+
     },
     startGame: function(){
-        this.pressIncorrect = 0;
         stateGame = STATE_GAME_PLAYING;
-        this.randomWord = list[Math.floor(Math.random()*list.length)];
-        this.showingWord(this.randomWord);
+        game.input.keyboard.addCallbacks(this, null, null, this.gettingLetterFromKeyboard);
+        this.pressIncorrect = 0;
+        this.bmd;
+
+        this.correct = [];
         this.platform.visible = true;
-        
+        this.hangmanComplete.visible = false;
+        this.title.visible = false;
+        this.buttonPlay.visible = false;
+        this.head.visible = false;
+        this.body.visible = false;
+        this.armRight.visible = false;
+        this.armLeft.visible = false;
+        this.legRight.visible = false;
+        this.legLeft.visible = false;
+        this.blackBackground.visible = false;
+        this.bgMenu.visible = false;
+        this.wonTxt.visible = false;
+        this.loseTxt.visible = false;
+        this.buttonPlayAgain.visible = false;
+
+        this.randomWord = list[Math.floor(Math.random()*list.length)];
+        console.log(this.randomWord);
+        this.showingWord(this.randomWord);
     },
     gettingLetterFromKeyboard:function(char){
-        bmd.cls();
+        this.bmd.cls();
         //  Set the x value we'll start drawing the text from
         var x = 300;
-        
+
         // Verifying no match letter when someone pressed a button
         if(!this.randomWord.includes(char)){
             this.pressIncorrect += 1;
-            this.pressOnAIncorrectWord();  
+            this.pressOnAIncorrectWord();
         }
 
         //  Loop through each letter of the word being entered and check them against the key that was pressed
@@ -79,28 +124,28 @@ GamePlayManager = {   //ObjetoGamePlayManager
             var letter = this.randomWord.charAt(i);
             //  If they pressed one of the letters in the word, flag it as correct
             if (char === letter){
-                correct[letter] = true;   
+                this.correct[letter] = true;
             }
             //  Now draw the word, letter by letter, changing colour as required
-            if (correct[letter]){
-                bmd.context.fillStyle = '#00ff00';
+            if (this.correct[letter]){
+                this.bmd.context.fillStyle = '#00ff00';
             }
             else{
-                bmd.context.fillStyle = '#ffffff';
+                this.bmd.context.fillStyle = '#ffffff';
             }
-            bmd.context.fillText(letter, x, 550);
-            x += bmd.context.measureText(letter).width;
+            this.bmd.context.fillText(letter, x, 550);
+            x += this.bmd.context.measureText(letter).width;
         }
         this.verifyingIfWin();
     },
     verifyingIfWin: function(){ //Veryfying if the user game
         var list = [];
 
-        Object.keys(correct).forEach(key => { //Obtaining all values from hash
-            let value = correct[key];
+        Object.keys(this.correct).forEach(key => { //Obtaining all values from hash
+            let value = this.correct[key];
             list.push(value); //Pushing all values into our list
         });
-        
+
         function allElementsAreTrue(currentValue) {
             return currentValue === true;
         }
@@ -112,15 +157,16 @@ GamePlayManager = {   //ObjetoGamePlayManager
     showingWord: function(word){
         for (var i = 0; i < word.length; i++)
         {
-            correct[word[i]] = false;
+            this.correct[word[i]] = false;
         }
 
         //  This is our BitmapData onto which we'll draw the word being entered
-        bmd = game.make.bitmapData(1136, 640);
-        bmd.context.font = '140px Arial';
-        bmd.context.fillStyle = '#ffffff';
-        bmd.context.fillText(word, 300, 550);
-        bmd.addToWorld();
+        this.bmd = game.make.bitmapData(1136, 640);
+        this.bmd.context.font = '140px Arial';
+        this.bmd.context.fillStyle = '#ffffff';
+        this.bmd.context.fillText(word, 300, 550);
+        this.bmd.addToWorld();
+        console.log(this.bmd + " 3");
     },
     pressOnAIncorrectWord: function(){ //How many times user pressed an incorrect letter which no match with our word.
         var errorCounter = this.pressIncorrect;
@@ -148,11 +194,16 @@ GamePlayManager = {   //ObjetoGamePlayManager
     },
     gameOver: function(){  //Game over
         stateGame = STATE_GAME_GAME_OVER;
-        game.input.keyboard.stop();
+        this.bmd.visible = false;
     },
-    winGame: function(){ // Winn
+    winGame: function(){ // Win
         stateGame = STATE_GAME_WIN;
-        game.input.keyboard.stop();
+        game.input.keyboard.reset(true);
+    },
+    playAgain: function(){
+        game.input.keyboard.reset(true);
+        this.bmd.cls();
+        this.startGame();
     },
     update: function(){
         switch(stateGame){ //Maquina de estados
@@ -166,26 +217,34 @@ GamePlayManager = {   //ObjetoGamePlayManager
                     this.armRight.visible = false;
                     this.armLeft.visible = false;
                     this.legRight.visible = false;
-                    this.legLeft.visible = false; 
+                    this.legLeft.visible = false;
+
+                    this.blackBackground.visible = false;
+                    this.bgMenu.visible = false;
+                    this.wonTxt.visible = false;
+                    this.loseTxt.visible = false;
+                    this.buttonPlayAgain.visible = false;
                 break;
-            
+
             case STATE_GAME_MAIN_MENU:
                 break;
-            
+
             case STATE_GAME_PLAYING:
-                    this.title.visible = false;
-                    this.hangmanComplete.visible = false;
-                    this.buttonPlay.visible = false;
-                    this.platform.visible = true;
-                    //  Capture all key presses
-                    game.input.keyboard.addCallbacks(this, null, null, this.gettingLetterFromKeyboard);
                 break;
 
             case STATE_GAME_GAME_OVER:
+                    this.blackBackground.visible = true;
+                    this.bgMenu.visible = true;
+                    this.loseTxt.visible = true;
+                    this.buttonPlayAgain.visible = true;
                     console.log("Game Over");
                 break;
 
             case STATE_GAME_WIN:
+                    this.blackBackground.visible = true;
+                    this.bgMenu.visible = true;
+                    this.wonTxt.visible = true;
+                    this.buttonPlayAgain.visible = true;
                     console.log("You Win");
                 break;
         }
