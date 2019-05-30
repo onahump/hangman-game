@@ -7,7 +7,7 @@ var STATE_GAME_WIN                  = 6;
 
 
 var stateGame = STATE_GAME_NONE; //estado inicial
-var list = ["resistencia", "arduino", "robot", "computadora", "creacion","sensores","circuito","motor"];
+var list = ["resistencia", "arduino", "robot", "computadora", "programacion","sensores","circuito","motor"];
 
 GamePlayManager = {   //ObjetoGamePlayManager
     init: function(){
@@ -40,23 +40,25 @@ GamePlayManager = {   //ObjetoGamePlayManager
         this.title.anchor.setTo(0.5);
         this.hangmanComplete = game.add.sprite(game.width/2, 300, 'hangman');
         this.hangmanComplete.anchor.setTo(0.5);
-        this.hangmanComplete.scale.setTo(0.7);
+        this.hangmanComplete.scale.setTo(0.5);
         this.platform = game.add.sprite(game.width/2, 250, 'platform');
+        this.platform.anchor.setTo(0.5);
+        this.platform.scale.setTo(0.8);
         this.platform.anchor.setTo(0.5);
         this.buttonPlay = game.add.button(game.width/2, 520, 'button-play', this.startGame, this); //new Button(posicion x , posicion x, llave , funcion a llamar , callback Context GAMEPlayManager (this), imagen antes de pasar el raton, imagen al pasar el raton, imagen a cargar antes de dar click, imagen al cagar al dar click)
         this.buttonPlay.anchor.setTo(0.5);
         this.head = game.add.sprite(582, 149, 'head');
-        this.head.scale.setTo(0.7);
+        this.head.scale.setTo(0.5);
         this.body = game.add.sprite(600, 200, 'body');
-        this.body.scale.setTo(0.7);
+        this.body.scale.setTo(0.5);
         this.armRight = game.add.sprite(612, 185, 'armRight');
-        this.armRight.scale.setTo(0.7);
+        this.armRight.scale.setTo(0.5);
         this.armLeft = game.add.sprite(564, 185, 'armLeft');
-        this.armLeft.scale.setTo(0.7);
+        this.armLeft.scale.setTo(0.5);
         this.legRight = game.add.sprite(612, 270, 'legRight');
-        this.legRight.scale.setTo(0.7);
+        this.legRight.scale.setTo(0.5);
         this.legLeft = game.add.sprite(564, 270, 'legLeft');
-        this.legLeft.scale.setTo(0.7);
+        this.legLeft.scale.setTo(0.5);
 
         //Black background
         var pixel = game.add.bitmapData(1,1);
@@ -107,6 +109,36 @@ GamePlayManager = {   //ObjetoGamePlayManager
         this.randomWord = list[Math.floor(Math.random()*list.length)];
         console.log(this.randomWord);
         this.showingWord(this.randomWord);
+        this.tip;
+
+        switch(this.randomWord) {
+            case "resistencia":
+                this.tip = "Su misión es oponerse al paso de la corriente eléctrica";
+              break;
+            case "arduino":
+                this.tip = "Es una plataforma de hardware libre, basada en una placa con un microcontrolador y un entorno de desarrollo";
+              break;
+            case "robot":
+                this.tip = "Es una máquina programable que puede manipular objetos y realizar operaciones como los seres humanos";
+              break
+            case "computadora":
+                this.tip = "Máquina electrónica capaz de almacenar información y tratarla con operaciones matemáticas y lógicas.";
+              break;
+            case "programacion":
+                this.tip = "Es la acción y efecto de programar.";
+              break;
+            case "sensores":
+                this.tip = "Pueden detectar distancias, temperaturas, velocidad, entre otras. ";
+              break
+            case "circuito":
+                this.tip = "Es una red electrónica que transporta corriente eléctrica .";
+              break;
+            case "motor":
+                this.tip = "Es la parte de una máquina capaz de hacer funcionar un sistema transformando algún tipo de energía ";
+              break
+        }
+
+        console.log(this.randomWord + ": " + this.tip);
     },
     gettingLetterFromKeyboard:function(char){
         this.bmd.cls();
@@ -140,9 +172,11 @@ GamePlayManager = {   //ObjetoGamePlayManager
     },
     verifyingIfWin: function(){ //Veryfying if the user game
         var list = [];
+        var wordsList = [];
 
         Object.keys(this.correct).forEach(key => { //Obtaining all values from hash
             let value = this.correct[key];
+            console.log(key + ": " + value);
             list.push(value); //Pushing all values into our list
         });
 
@@ -166,7 +200,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
         this.bmd.context.fillStyle = '#ffffff';
         this.bmd.context.fillText(word, 300, 550);
         this.bmd.addToWorld();
-        console.log(this.bmd + " 3");
+        console.log(this.bmd);
     },
     pressOnAIncorrectWord: function(){ //How many times user pressed an incorrect letter which no match with our word.
         var errorCounter = this.pressIncorrect;
@@ -190,7 +224,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
                 this.legRight.visible = true;
                 this.gameOver();
               break
-          }
+        }
     },
     gameOver: function(){  //Game over
         stateGame = STATE_GAME_GAME_OVER;
