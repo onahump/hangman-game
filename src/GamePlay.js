@@ -88,6 +88,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
         game.input.keyboard.addCallbacks(this, null, null, this.gettingLetterFromKeyboard);
         this.pressIncorrect = 0;
         this.bmd;
+        this.tipText = NaN;
 
         this.correct = [];
         this.platform.visible = true;
@@ -116,27 +117,35 @@ GamePlayManager = {   //ObjetoGamePlayManager
                 this.tip = "Su misión es oponerse al paso de la corriente eléctrica";
               break;
             case "arduino":
-                this.tip = "Es una plataforma de hardware libre, basada en una placa con un microcontrolador y un entorno de desarrollo";
+                this.tip = "Es una plataforma de hardware libre, basada en una placa con un microcontrolador\n y un entorno de desarrollo";
               break;
             case "robot":
-                this.tip = "Es una máquina programable que puede manipular objetos y realizar operaciones como los seres humanos";
+                this.tip = "Es una máquina programable que puede manipular objetos y realizar operaciones\n como los seres humanos";
               break
             case "computadora":
-                this.tip = "Máquina electrónica capaz de almacenar información y tratarla con operaciones matemáticas y lógicas.";
+                this.tip = "Máquina electrónica capaz de almacenar información y tratarla con operaciones\n  matemáticas y lógicas.";
               break;
             case "programacion":
                 this.tip = "Es la acción y efecto de programar.";
               break;
             case "sensores":
-                this.tip = "Pueden detectar distancias, temperaturas, velocidad, entre otras. ";
+                this.tip = "Pueden detectar distancias, temperaturas, velocidad, entre otras.";
               break
             case "circuito":
                 this.tip = "Es una red electrónica que transporta corriente eléctrica .";
               break;
             case "motor":
-                this.tip = "Es la parte de una máquina capaz de hacer funcionar un sistema transformando algún tipo de energía ";
+                this.tip = "Es la parte de una máquina capaz de hacer funcionar un sistema transformando \n algún tipo de energía ";
               break
         }
+        var style = {
+            font: 'bold 18pt Arial',
+            fill: '#FFFF',
+            align: 'left'
+        }
+        this.tipText = game.add.text(game.width/2,60,'',style);
+        this.tipText.anchor.setTo(0.5);
+        this.tipText.text = this.tip;
 
         console.log(this.randomWord + ": " + this.tip);
     },
@@ -235,8 +244,9 @@ GamePlayManager = {   //ObjetoGamePlayManager
         game.input.keyboard.reset(true);
     },
     playAgain: function(){
+        this.tipText.destroy();
         game.input.keyboard.reset(true);
-        this.bmd.cls();
+        this.bmd.destroy();
         this.startGame();
     },
     update: function(){
