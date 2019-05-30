@@ -246,7 +246,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
     playAgain: function(){
         this.tipText.destroy();
         game.input.keyboard.reset(true);
-        this.bmd.destroy();
+        this.bmd.cls();
         this.startGame();
     },
     update: function(){
