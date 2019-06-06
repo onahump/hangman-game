@@ -49,15 +49,15 @@ GamePlayManager = {   //ObjetoGamePlayManager
         this.buttonPlay.anchor.setTo(0.5);
         this.head = game.add.sprite(582, 149, 'head');
         this.head.scale.setTo(0.5);
-        this.body = game.add.sprite(600, 200, 'body');
+        this.body = game.add.sprite(594, 185, 'body');
         this.body.scale.setTo(0.5);
-        this.armRight = game.add.sprite(612, 185, 'armRight');
+        this.armRight = game.add.sprite(606, 185, 'armRight');
         this.armRight.scale.setTo(0.5);
         this.armLeft = game.add.sprite(564, 185, 'armLeft');
         this.armLeft.scale.setTo(0.5);
-        this.legRight = game.add.sprite(612, 270, 'legRight');
+        this.legRight = game.add.sprite(606, 240, 'legRight');
         this.legRight.scale.setTo(0.5);
-        this.legLeft = game.add.sprite(564, 270, 'legLeft');
+        this.legLeft = game.add.sprite(564, 240, 'legLeft');
         this.legLeft.scale.setTo(0.5);
 
         //Black background
@@ -81,7 +81,16 @@ GamePlayManager = {   //ObjetoGamePlayManager
         this.buttonPlayAgain.anchor.setTo(0.5);
         this.buttonPlayAgain.scale.setTo(0.7);
 
-
+        var style = {
+            font: 'bold 20pt Arial',
+            fill: '#FFFFFF',
+            align: 'center',
+        }
+        this.currentScore = 0
+        this.scoreboardText = game.add.text(80, 600, this.currentScore.toString(), style);
+        this.scoreboardText.anchor.setTo(0.5);
+        this.scoreText = game.add.text(80, 565, "Puntaje", style);
+        this.scoreText.anchor.setTo(0.5);
     },
     startGame: function(){
         stateGame = STATE_GAME_PLAYING;
@@ -89,7 +98,8 @@ GamePlayManager = {   //ObjetoGamePlayManager
         this.pressIncorrect = 0;
         this.bmd;
         this.tipText = NaN;
-
+        this.scoreText.visible = true;
+        this.scoreboardText.visible = true;
         this.correct = [];
         this.platform.visible = true;
         this.hangmanComplete.visible = false;
@@ -145,7 +155,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
         }
         this.tipText = game.add.text(game.width/2,60,'',style);
         this.tipText.anchor.setTo(0.5);
-        this.tipText.text = this.tip;
+        this.tipText.text = "TIP - " +this.tip;
 
         console.log(this.randomWord + ": " + this.tip);
     },
@@ -158,6 +168,8 @@ GamePlayManager = {   //ObjetoGamePlayManager
         if(!this.randomWord.includes(char)){
             this.pressIncorrect += 1;
             this.pressOnAIncorrectWord();
+        }else{
+            this.incrementScore();
         }
 
         //  Loop through each letter of the word being entered and check them against the key that was pressed
@@ -182,6 +194,10 @@ GamePlayManager = {   //ObjetoGamePlayManager
         }
         this.verifyingIfWin();
     },
+    incrementScore: function(){
+        this.currentScore += 10;
+        this.scoreboardText.text = this.currentScore.toString();
+    },
     verifyingIfWin: function(){ //Veryfying if the user game
         var list = [];
         var wordsList = [];
@@ -198,6 +214,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
 
         if(list.every(allElementsAreTrue)){ //Verifying if all elements into our list are true
             this.winGame(); //If all elements are true we will win
+
         }
     },
     showingWord: function(word){
@@ -292,6 +309,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
                 break;
 
             case STATE_GAME_LOADING:
+                    this.scoreText.visible = false;
                     this.platform.visible = false;
                     this.head.visible = false;
                     this.body.visible = false;
@@ -305,6 +323,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
                     this.wonTxt.visible = false;
                     this.loseTxt.visible = false;
                     this.buttonPlayAgain.visible = false;
+                    this.scoreboardText.visible = false;
                 break;
 
             case STATE_GAME_MAIN_MENU:
