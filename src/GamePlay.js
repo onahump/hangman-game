@@ -152,7 +152,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
     gettingLetterFromKeyboard:function(char){
         this.bmd.cls();
         //  Set the x value we'll start drawing the text from
-        var x = 300;
+        var x = 200;
 
         // Verifying no match letter when someone pressed a button
         if(!this.randomWord.includes(char)){
@@ -169,10 +169,13 @@ GamePlayManager = {   //ObjetoGamePlayManager
             }
             //  Now draw the word, letter by letter, changing colour as required
             if (this.correct[letter]){
-                this.bmd.context.fillStyle = '#00ff00';
+                this.bmd.context.fillStyle = '#ffff';
+                this.bmd.context.globalAlpha = 1;
+
             }
             else{
-                this.bmd.context.fillStyle = '#ffffff';
+                this.bmd.context.globalAlpha = 0.0;
+
             }
             this.bmd.context.fillText(letter, x, 550);
             x += this.bmd.context.measureText(letter).width;
@@ -206,8 +209,8 @@ GamePlayManager = {   //ObjetoGamePlayManager
         //  This is our BitmapData onto which we'll draw the word being entered
         this.bmd = game.make.bitmapData(1136, 640);
         this.bmd.context.font = '140px Arial';
-        this.bmd.context.fillStyle = '#ffffff';
-        this.bmd.context.fillText(word, 300, 550);
+        this.bmd.context.globalAlpha = 0.0;
+        this.bmd.context.fillText(word, 200, 550);
         this.bmd.addToWorld();
         console.log(this.bmd);
     },
@@ -237,17 +240,51 @@ GamePlayManager = {   //ObjetoGamePlayManager
     },
     gameOver: function(){  //Game over
         stateGame = STATE_GAME_GAME_OVER;
+        this.blackBackgroundMenu();
+        //Lose or Won
+        this.bgMenu = game.add.sprite(game.width/2, game.height/2, 'bgMenu');
+        this.bgMenu.anchor.setTo(0.5);
+        this.loseTxt = game.add.sprite(game.width/2, 150, 'loseTxt');
+        this.loseTxt.anchor.setTo(0.5);
+        this.buttonPlayAgain = game.add.button(game.width/2, 280, 'buttonPlayAgain', this.playAgain, this);
+        this.buttonPlayAgain.anchor.setTo(0.5);
+        this.buttonPlayAgain.scale.setTo(0.7);
         this.bmd.visible = false;
+    },
+    blackBackgroundMenu: function(){
+        //Black background
+        var pixel = game.add.bitmapData(1,1);
+        pixel.ctx.fillStyle = '#000000';
+        pixel.ctx.fillRect(0,0,1,1);
+
+        this.blackBackground = game.add.sprite(0,0,pixel);
+        this.blackBackground.width = game.width;
+        this.blackBackground.height = game.height;
+        this.blackBackground.alpha = 0.5;
     },
     winGame: function(){ // Win
         stateGame = STATE_GAME_WIN;
+        this.blackBackgroundMenu();
+                //Lose or Won
+        this.bgMenu = game.add.sprite(game.width/2, game.height/2, 'bgMenu');
+        this.bgMenu.anchor.setTo(0.5);
+        this.wonTxt = game.add.sprite(game.width/2, 150, 'wonTxt');
+        this.wonTxt.anchor.setTo(0.5);
+        this.buttonPlayAgain = game.add.button(game.width/2, 280, 'buttonPlayAgain', this.playAgain, this);
+        this.buttonPlayAgain.anchor.setTo(0.5);
+        this.buttonPlayAgain.scale.setTo(0.7);
         game.input.keyboard.reset(true);
     },
     playAgain: function(){
         this.tipText.destroy();
+        this.bgMenu.destroy();
+        this.wonTxt.destroy();
+        this.loseTxt.destroy();
+        this.buttonPlayAgain.destroy();
         game.input.keyboard.reset(true);
         this.bmd.cls();
         this.startGame();
+        this.blackBackground.destroy();
     },
     update: function(){
         switch(stateGame){ //Maquina de estados
