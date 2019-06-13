@@ -37,6 +37,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
         game.load.image('wonTxt', 'assets/img/youwon.png');
         game.load.image('loseTxt', 'assets/img/youlose.png');
         game.load.image('correctWord', 'assets/img/correctword.png');
+        game.load.image('logo', 'assets/img/logo.png');
     },
     create: function(){
         this.backgroundWon = game.add.sprite(0, 0, 'backgroundWon');
@@ -64,6 +65,9 @@ GamePlayManager = {   //ObjetoGamePlayManager
         this.legRight.scale.setTo(0.5);
         this.legLeft = game.add.sprite(564, 240, 'legLeft');
         this.legLeft.scale.setTo(0.5);
+        this.logo = game.add.sprite(game.width - 80, 580, 'logo');
+        this.logo.anchor.setTo(0.5);
+        this.logo.scale.setTo(0.065);
 
         //Black background
         var pixel = game.add.bitmapData(1,1);
