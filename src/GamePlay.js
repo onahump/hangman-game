@@ -120,7 +120,6 @@ GamePlayManager = {   //ObjetoGamePlayManager
         if(list === undefined || list.length === 0){
             stateGame = WON_ALL_GAME;
             this.youWonAllGame();
-            console.log("You Won All Game");
         }else{
             stateGame = STATE_GAME_PLAYING;
             if(this.scoreText2 || this.scoreboardText2){
@@ -154,9 +153,7 @@ GamePlayManager = {   //ObjetoGamePlayManager
             this.correctTxt.visible = false;
             this.buttonNextWord.visible = false;
 
-
             this.randomWord = list[Math.floor(Math.random()*list.length)];
-            console.log(this.randomWord);
             this.showingWord(this.randomWord);
             this.tip;
 
@@ -195,38 +192,45 @@ GamePlayManager = {   //ObjetoGamePlayManager
             this.tipText.anchor.setTo(0.5);
             this.tipText.text = "TIP - " +this.tip;
 
-            console.log(this.randomWord + ": " + this.tip);
+/*            var styleGuessTheWord = {
+                font: 'bold 100pt Arial',
+                fill: '#FFFF',
+                align: 'center'
+            }
+
+            this.initialText = "-".repeat(this.randomWord.length);
+            this.guessTheWord = game.add.text(game.width/2, 500, this.initialText ,styleGuessTheWord);
+            this.guessTheWord.anchor.setTo(0.5);*/
         }
     },
     gettingLetterFromKeyboard:function(char){
         this.bmd.cls();
         //  Set the x value we'll start drawing the text from
         var x = 200;
-
         // Verifying no match letter when someone pressed a button
-        if(!this.randomWord.includes(char)){
+        if(this.randomWord.includes(char)){
+            this.incrementScore();
+        }else{
             this.pressIncorrect += 1;
             this.pressOnAIncorrectWord();
-        }else{
-            this.incrementScore();
         }
 
-        //  Loop through each letter of the word being entered and check them against the key that was pressed
+        // Loop through each letter of the word being entered and check them against the key that was pressed
         for (var i = 0; i < this.randomWord.length; i++){
             var letter = this.randomWord.charAt(i);
-            //  If they pressed one of the letters in the word, flag it as correct
-            if (char === letter){
+
+              //If they pressed one of the letters in the word, flag it as correct
+            if (letter === char){
                 this.correct[letter] = true;
             }
-            //  Now draw the word, letter by letter, changing colour as required
+
+              //Now draw the word, letter by letter, changing colour as required
             if (this.correct[letter]){
                 this.bmd.context.fillStyle = '#ffff';
                 this.bmd.context.globalAlpha = 1;
-
             }
             else{
                 this.bmd.context.globalAlpha = 0.0;
-
             }
             this.bmd.context.fillText(letter, x, 550);
             x += this.bmd.context.measureText(letter).width;
@@ -242,7 +246,6 @@ GamePlayManager = {   //ObjetoGamePlayManager
 
         Object.keys(this.correct).forEach(key => { //Obtaining all values from hash
             let value = this.correct[key];
-            console.log(key + ": " + value);
             wordsList.push(value); //Pushing all values into our list
         });
 
@@ -254,12 +257,11 @@ GamePlayManager = {   //ObjetoGamePlayManager
             this.winGame(); //If all elements are true we will win
             var positionCorrectWordOnList = list.indexOf(this.randomWord);
             list.splice(positionCorrectWordOnList,1);
-            console.log(positionCorrectWordOnList);
         }
+
     },
     showingWord: function(word){
-        for (var i = 0; i < word.length; i++)
-        {
+        for (var i = 0; i< word.length; i++){
             this.correct[word[i]] = false;
         }
 
@@ -269,7 +271,6 @@ GamePlayManager = {   //ObjetoGamePlayManager
         this.bmd.context.globalAlpha = 0.0;
         this.bmd.context.fillText(word, 200, 550);
         this.bmd.addToWorld();
-        console.log(this.bmd);
     },
     pressOnAIncorrectWord: function(){ //How many times user pressed an incorrect letter which no match with our word.
         var errorCounter = this.pressIncorrect;
@@ -354,17 +355,33 @@ GamePlayManager = {   //ObjetoGamePlayManager
         this.startGame();
         this.blackBackground.destroy();
     },
-    gameOver: function(){  //Game over
-        stateGame = STATE_GAME_GAME_OVER;
+    playAgainLose: function(){
+        this.tipText.destroy()
+        this.bgMenu.destroy();
+        this.correctTxt.destroy();
+        this.wonTxt.destroy();
+        this.buttonNextWord.destroy();
+        this.loseTxt.destroy();
+        this.buttonPlayAgain.destroy();
+        game.input.keyboard.start();
+        game.input.keyboard.reset(true);
+        this.bmd.cls();
+        this.startGame();
+        this.blackBackground.destroy();
         this.currentScore = 0;
         this.scoreboardText.text = this.currentScore.toString();
+    },
+    gameOver: function(){  //Game over
+        stateGame = STATE_GAME_GAME_OVER;
+        //this.currentScore = 0;
+        //this.scoreboardText.text = this.currentScore.toString();
         this.blackBackgroundMenu();
         //Lose or Won
         this.bgMenu = game.add.sprite(game.width/2, game.height/2, 'bgMenu');
         this.bgMenu.anchor.setTo(0.5);
         this.loseTxt = game.add.sprite(game.width/2, 150, 'loseTxt');
         this.loseTxt.anchor.setTo(0.5)
-        this.buttonPlayAgain = game.add.button(game.width/2, 280, 'buttonPlayAgain', this.playAgain, this);
+        this.buttonPlayAgain = game.add.button(game.width/2, 280, 'buttonPlayAgain', this.playAgainLose, this);
         list = ["resistencia", "arduino", "robot", "computadora", "programacion","sensores","circuito","motor"];
         this.showMarker();
         this.buttonPlayAgain.anchor.setTo(0.5);
@@ -418,7 +435,6 @@ GamePlayManager = {   //ObjetoGamePlayManager
                     this.loseTxt.visible = true;
                     this.buttonPlayAgain.visible = true;
                     this.backgroundWon.visible = false;
-                    console.log("Game Over");
                 break;
 
             case STATE_GAME_WIN:
@@ -427,7 +443,6 @@ GamePlayManager = {   //ObjetoGamePlayManager
                     this.correctTxt.visible = true;
                     this.buttonNextWord.visible = true;
                     this.backgroundWon.visible = false;
-                    console.log("You Win");
                 break;
             case WON_ALL_GAME:
                 break;
